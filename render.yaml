@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: louvamais
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python src/main.py
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PORT
+        value: 5000
+    healthCheckPath: /
+    
+databases:
+  - name: louvamais-db
+    databaseName: louvamais
+    user: louvamais_user
+

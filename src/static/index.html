@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escala Grupo de Oração</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-praying-hands"></i> Escala Grupo de Oração</h1>
+                <p>Gerencie as escalas de terças e quartas-feiras</p>
+            </div>
+            <div class="header-actions">
+                <button id="btn-pessoas" class="btn btn-secondary">
+                    <i class="fas fa-users"></i> Pessoas
+                </button>
+                <button id="btn-exportar" class="btn btn-warning">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+                <button id="btn-inicializar" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Inicializar Escalas
+                </button>
+                <button id="btn-estatisticas" class="btn btn-info">
+                    <i class="fas fa-chart-bar"></i> Estatísticas
+                </button>
+            </div>
+        </header>
+
+        <!-- Filtros -->
+        <div class="filters">
+            <div class="filter-group">
+                <label for="filtro-mes">Mês:</label>
+                <select id="filtro-mes">
+                    <option value="">Todos os meses</option>
+                    <option value="1">Janeiro</option>
+                    <option value="2">Fevereiro</option>
+                    <option value="3">Março</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Maio</option>
+                    <option value="6">Junho</option>
+                    <option value="7">Julho</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Setembro</option>
+                    <option value="10">Outubro</option>
+                    <option value="11">Novembro</option>
+                    <option value="12">Dezembro</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filtro-ano">Ano:</label>
+                <select id="filtro-ano">
+                    <option value="">Todos os anos</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                </select>
+            </div>
+            <div class="filter-actions">
+                <button id="btn-filtrar" class="btn btn-primary">
+                    <i class="fas fa-filter"></i> Filtrar
+                </button>
+                <button id="btn-limpar" class="btn btn-outline">
+                    <i class="fas fa-times"></i> Limpar
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Carregando...
+        </div>
+
+        <!-- Lista de Escalas -->
+        <div id="escalas-container" class="escalas-container">
+            <!-- Escalas serão carregadas aqui -->
+        </div>
+
+        <!-- Estado vazio -->
+        <div id="empty-state" class="empty-state" style="display: none;">
+            <i class="fas fa-calendar-times"></i>
+            <h3>Nenhuma escala encontrada</h3>
+            <p>Clique em "Inicializar Escalas" para criar as escalas automaticamente.</p>
+        </div>
+    </div>
+
+    <!-- Modal de Edição de Escala -->
+    <div id="modal-editar-escala" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-titulo">Editar Escala</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-escala">
+                    <div class="form-group">
+                        <label>Data:</label>
+                        <input type="text" id="escala-data" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Dia da Semana:</label>
+                        <input type="text" id="escala-dia-semana" readonly>
+                    </div>
+
+                    <!-- Campos para Terça-feira -->
+                    <div id="campos-terca" style="display: none;">
+                        <h3><i class="fas fa-calendar-day"></i> Terça-feira</h3>
+                        
+                        <div class="form-group">
+                            <label for="escala-pregacao">Pregação:</label>
+                            <div class="pessoas-selector" data-funcao="pregacao">
+                                <div class="pessoas-selected" id="pregacao-selected"></div>
+                                <button type="button" class="btn-add-pessoa" data-funcao="pregacao">
+                                    <i class="fas fa-plus"></i> Adicionar Pessoa
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="escala-musicos">Equipe Músicos:</label>
+                            <div class="pessoas-selector" data-funcao="musicos">
+                                <div class="pessoas-selected" id="musicos-selected"></div>
+                                <button type="button" class="btn-add-pessoa" data-funcao="musicos">
+                                    <i class="fas fa-plus"></i> Adicionar Pessoa
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="escala-conducao">Condução de Animação/Oração:</label>
+                            <div class="pessoas-selector" data-funcao="conducao_animacao">
+                                <div class="pessoas-selected" id="conducao_animacao-selected"></div>
+                                <button type="button" class="btn-add-pessoa" data-funcao="conducao_animacao">
+                                    <i class="fas fa-plus"></i> Adicionar Pessoa
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="escala-acolhida">Acolhida:</label>
+                            <div class="pessoas-selector" data-funcao="acolhida">
+                                <div class="pessoas-selected" id="acolhida-selected"></div>
+                                <button type="button" class="btn-add-pessoa" data-funcao="acolhida">
+                                    <i class="fas fa-plus"></i> Adicionar Pessoa
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campos para Quarta-feira -->
+                    <div id="campos-quarta" style="display: none;">
+                        <h3><i class="fas fa-calendar-day"></i> Quarta-feira</h3>
+                        
+                        <div class="form-group">
+                            <label for="escala-abastecimento">Responsável Condução Abastecimento:</label>
+                            <div class="pessoas-selector" data-funcao="abastecimento">
+                                <div class="pessoas-selected" id="abastecimento-selected"></div>
+                                <button type="button" class="btn-add-pessoa" data-funcao="abastecimento">
+                                    <i class="fas fa-plus"></i> Adicionar Pessoa
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-salvar-escala" class="btn btn-success">
+                    <i class="fas fa-save"></i> Salvar
+                </button>
+                <button id="btn-cancelar-escala" class="btn btn-outline">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pessoas -->
+    <div id="modal-pessoas" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2><i class="fas fa-users"></i> Gerenciar Pessoas</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="pessoas-tabs">
+                    <button class="tab-btn active" data-tab="pessoas">
+                        <i class="fas fa-user"></i> Pessoas
+                    </button>
+                    <button class="tab-btn" data-tab="equipes">
+                        <i class="fas fa-users-cog"></i> Equipes
+                    </button>
+                </div>
+
+                <!-- Tab Pessoas -->
+                <div id="tab-pessoas" class="tab-content active">
+                    <div class="pessoas-header">
+                        <button id="btn-nova-pessoa" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Nova Pessoa
+                        </button>
+                        <div class="search-box">
+                            <input type="text" id="busca-pessoa" placeholder="Buscar pessoa...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                    <div id="lista-pessoas" class="pessoas-lista">
+                        <!-- Lista de pessoas será carregada aqui -->
+                    </div>
+                </div>
+
+                <!-- Tab Equipes -->
+                <div id="tab-equipes" class="tab-content">
+                    <div class="equipes-header">
+                        <button id="btn-nova-equipe" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Nova Equipe
+                        </button>
+                        <button id="btn-inicializar-equipes" class="btn btn-info">
+                            <i class="fas fa-magic"></i> Inicializar Equipes Padrão
+                        </button>
+                    </div>
+                    <div id="lista-equipes" class="equipes-lista">
+                        <!-- Lista de equipes será carregada aqui -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Seleção de Pessoas -->
+    <div id="modal-selecionar-pessoas" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-selecao-titulo">Selecionar Pessoas</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-box">
+                    <input type="text" id="busca-selecao" placeholder="Buscar pessoa...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div id="lista-selecao-pessoas" class="pessoas-selecao">
+                    <!-- Lista de pessoas para seleção será carregada aqui -->
+                </div>
+                <div class="limite-info">
+                    <small><i class="fas fa-info-circle"></i> Máximo de 10 pessoas por função</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-confirmar-selecao" class="btn btn-success">
+                    <i class="fas fa-check"></i> Confirmar
+                </button>
+                <button id="btn-cancelar-selecao" class="btn btn-outline">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Estatísticas -->
+    <div id="modal-estatisticas" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Estatísticas das Escalas</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-total">0</div>
+                        <div class="stat-label">Total de Escalas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-tercas">0</div>
+                        <div class="stat-label">Terças-feiras</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-quartas">0</div>
+                        <div class="stat-label">Quartas-feiras</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-preenchidas">0</div>
+                        <div class="stat-label">Escalas Preenchidas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-vazias">0</div>
+                        <div class="stat-label">Escalas Vazias</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-progresso">0%</div>
+                        <div class="stat-label">Progresso</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
